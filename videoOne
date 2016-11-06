@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>videoPlayer</title>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/player.css">
+</head>
+<style>
+   .player {
+	width: 720px;
+	height: 360px;
+	margin: 0 auto;
+	background-color: #000;
+	position: relative;
+}
+.controls {
+	width: 720px;
+	height: 40px;
+	background-color: #000;
+	position: absolute;
+	left: 0;
+	bottom: -40px;
+	z-index: 99;
+}
+/*播放/暂停*/
+.controls .switch {
+	display: block;
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
+	color: #FFF;
+	position: absolute;
+	top: 11px;
+	left: 50%;
+}
+/*回到开始位置*/
+.controls .backward {
+	display: block;
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
+	color: #FFF;
+	position: absolute;
+	top: 11px;
+	left: 35%;
+}
+/*回到结束位置*/
+.controls .forward {
+	display: block;
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
+	color: #FFF;
+	position: absolute;
+	top: 11px;
+	left: 65%;
+}
+/*生成按钮*/
+.controls .generate {
+	display: block;
+	width: 48px;
+	height: 24px;
+	position: absolute;
+	right: 11px;
+	top: 11px;
+}
+/*进度条*/
+.progress {
+	width: 100%;
+	height: 30px;
+	display: none;
+	background-color: #555;
+	opacity: .5;
+	cursor: pointer;
+	position: absolute;
+	top: -30px;
+	left: 0px;
+}
+/*播放进度*/
+.progress .loaded {
+	width: 0;
+	height: 100%;
+	background-color:#0089cc;
+}
+/*时间*/
+.timer {
+	height: 20px;
+	line-height: 20px;
+	position: absolute;
+	left: 0px;
+	top: 11px;
+	color: #FFF;
+	font-size: 14px;
+}
+</style>
+<body>
+    <div class="player">
+        <video class="video" width="720px" height="360px">
+            <source src="video/fun.mp4">
+        </video>
+        <div class="controls">
+            <!-- 返回开头 -->
+            <span class="backward fa fa-step-backward"></span>
+            <!-- 播放/暂停 -->
+            <span class="switch fa fa-play"></span>
+            <!-- 返回结尾 -->
+            <span class="forward fa fa-step-forward"></span>
+            <!-- 生成-->
+            <button class="generate">生成</button>
+            <!-- 进度条 -->
+            <div class="progress">
+                <div class="loaded"></div>
+            </div>
+            <!-- 时间 -->
+            <div class="timer">
+                <span class="current">00:00:00</span> /
+                <span class="total">00:00:00</span>
+            </div>
+        </div>
+    </div>
+  <script>
+    var video = document.querySelector(".video");
+    var isPlay = document.querySelector(".switch");
+    var progress = document.querySelector(".progress");
+    var loaded = document.querySelector(".progress > .loaded");
+    var currPlayTime = document.querySelector(".timer > .current");
+    var totalTime = document.querySelector(".timer > .total");
+    var backward = document.querySelector(".backward");
+    var forward = document.querySelector(".forward");
+
+    //当视频可播放的时候
+    video.oncanplay = function(){
+        //显示视频总时长
+        totalTime.innerHTML = getFormatTime(this.duration);
+    };
+    //播放按钮控制
+    isPlay.onclick = function(){
+        if(video.paused) {
+            video.play();
+            progress.style.display="block";
+        } else {
+            video.pause();
+            progress.style.display="none";
+        }
+        this.classList.toggle("fa-pause");
+    };
+    //播放进度
+    video.ontimeupdate = function(){
+        var currTime = this.currentTime,    //当前播放时间
+            duration = this.duration;       // 视频总时长
+        //百分比
+        var pre = currTime / duration * 100 + "%";
+        //显示进度条
+        loaded.style.width = pre;
+        //显示当前播放进度时间
+        currPlayTime.innerHTML = getFormatTime(currTime);
+    };
+    //跳跃播放
+    progress.onclick = function(e){
+        var event = e || window.event;
+        video.currentTime = (event.offsetX / this.offsetWidth) * video.duration;
+    };
+    //播放完毕还原设置
+    video.onended = function(){
+        //切换播放按钮状态
+        isPlay.classList.remove("fa-pause");
+        isPlay.classList.add("fa-play");
+		progress.style.display="none";
+         //进度条为0
+         //loaded.style.width = 0;
+         //还原当前播放时间
+         //currPlayTime.innerHTML = getFormatTime();
+         //视频恢复到播放开始状态
+         //video.currentTime = 0;
+    };
+    //返回开头
+    backward.onclick = function () {
+        video.currentTime = 0;
+        video.pause();
+        isPlay.classList.remove("fa-pause");
+        progress.style.display="none";
+    };
+    //返回结尾
+    forward.onclick = function () {
+        video.currentTime = video.duration;
+        video.pause();
+        isPlay.classList.remove("fa-pause");
+        progress.style.display="none";
+    };
+
+    function getFormatTime(time) {
+        var time = time || 0;
+        var h = parseInt(time/3600),
+            m = parseInt(time%3600/60),
+            s = parseInt(time%60);
+        h = h < 10 ? "0"+h : h;
+        m = m < 10 ? "0"+m : m;
+        s = s < 10 ? "0"+s : s;
+        return h+":"+m+":"+s;
+    };
+  </script>
+</body>
+</html>
