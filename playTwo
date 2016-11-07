@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>videoPlayer</title>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/player.css">
+    <script src="js/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="myCtrl">
+    <div class="player">
+        <video class="video" width="720px" height="360px">
+            <source src="video/fun.mp4">
+        </video>
+        <div class="controls">
+            <!-- 返回开头 -->
+            <span class="backward fa fa-step-backward" ng-click="backward()"></span>
+            <!-- 播放/暂停 -->
+            <span class="switch fa fa-play" ng-click="switch()"></span>
+            <!-- 返回结尾 -->
+            <span class="forward fa fa-step-forward"></span>
+            <!-- 生成-->
+            <button class="generate">生成</button>
+            <!-- 进度条 -->
+            <div class="progress" ng-click="jump()">
+                <div class="loaded"></div>
+            </div>
+            <!-- 时间 -->
+            <div class="timer">
+                <span class="current">00:00:00</span> /
+                <span class="total">00:00:00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl', function ($scope) {
+        var video= angular.element(document.querySelector(".video"));
+        var isPlay = angular.element(document.querySelector(".switch"));
+        var totalTime = angular.element(document.querySelector(".timer > .total"));
+        var progress =  angular.element(document.querySelector(".progress"));
+        console.log(video[0].oncanplay());
+        $scope.switch = function() {
+            //当视频可播放的时候显示视频总时长
+            totalTime[0].innerHTML = getFormatTime(video[0].duration);
+
+            if(video[0].paused) {
+                video[0].play();
+            } else {
+                video[0].pause();
+            }
+            isPlay[0].classList.toggle("fa-pause");
+        };
+        $scope.jump = function (e) {
+            var event = e || window.event;
+            video[0].currentTime = (event.offsetX / progress[0].offsetWidth) * video[0].duration;
+        }
+        $scope.backward = function () {
+            video[0].currentTime--;
+            video[0].pause();
+            isPlay[0].classList.remove("fa-pause");
+        }
+        
+
+        function getFormatTime(time) {
+            var time = time || 0;
+            var h = parseInt(time/3600),
+                    m = parseInt(time%3600/60),
+                    s = parseInt(time%60);
+            h = h < 10 ? "0"+h : h;
+            m = m < 10 ? "0"+m : m;
+            s = s < 10 ? "0"+s : s;
+            return h+":"+m+":"+s;
+        };
+
+    });
+</script>
+
+</body>
+</html>
