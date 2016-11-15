@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="js/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="myCtrl01">
+   <load-data how-load="loadData01()">滑动加载数据111111111</load-data>
+</div>
+<br>
+<div ng-controller="myCtrl02">
+    <load-data how-load="loadData02()">滑动加载数据222222222</load-data>
+</div>
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myCtrl01', function ($scope) {
+       $scope.loadData01=function () {
+           console.log("开始加载数据111111");
+       }
+    });
+
+    app.controller('myCtrl02', function ($scope) {
+        $scope.loadData02=function () {
+            console.log("开始加载数据222222");
+        }
+    });
+
+    app.directive("loadData",function () {    //注意元素名是驼峰形式的
+        return{
+            restrict:"AE",
+            link:function (scope,element,attrs) {
+                element.bind("mouseenter",function () {
+                    //scope.loadData01();
+                    //scope.$apply("loadData01()");
+                    //attrs.howLoad;
+                    scope.$apply(attrs.howLoad);  //注意属性名是驼峰形式的
+                })
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
