@@ -1169,16 +1169,6 @@ $ws_worker-&gt;onMessage = function($connection, $data)
 Worker::runAll();
 ?&gt;</code></pre></div>
 
-<blockquote>
-<p><strong>原创声明：</strong>如发布或转载请注明以下作者信息，谢谢！</p>
-
-<p>本文作者 - 金云龙</p>
-
-<p>联系方式 - QQ：2080954535；微信：imlonge；微信公众号：longestory</p>
-
-<p>个人网站：<a href="http://www.longestory.com">http://www.longestory.com</a></p>
-</blockquote>
-
 
 
 <script type="text/javascript">
