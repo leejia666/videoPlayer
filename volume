@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>进度条</title>
+
+    <style>
+      body {
+        margin: 0;
+      }
+      .pro-bar {
+        position: relative;
+        width: 50%;
+        height: 5px;
+        margin: 100px;
+        border-radius: 5px;
+        background: #ccc;
+        color: #239982;
+      }
+      .pro-bar .drag {
+        position: absolute;
+        left: 0;
+        margin-left: -8px;
+        top: -5px;
+        cursor: pointer;
+      }
+      .pro-bar .percent {
+        position: absolute;
+        top: -30px;
+        height: 10px;
+        width: 100%;
+        text-align: center;
+      }
+      .pro-bar .percent,
+      .pro-bar .drag {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+      .pro-bar .percent:before {
+        content: '0';
+        position: absolute;
+        left: 0;
+      }
+      .pro-bar .percent:after {
+        content: '100%';
+        position: absolute;
+        right: 0;
+      }
+      .pro-bar .rate-bar {
+        position: absolute;
+        left: 0;
+        background: #239982;
+        width: 0;
+        height: 5px;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="pro-bar">
+      <div class="percent">0</div>
+      <div class="rate-bar"></div>
+      <span class="iconfont drag"></span>
+    </div>
+
+<script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <script type="text/javascript">
+      function Bar(obj) {
+        this.bar_obj = $(obj); // 进度条的容器
+        this.drag_obj = this.bar_obj.find('.drag'); // 可以拖动的按钮
+        this.precent = this.bar_obj.find('.percent'); // 显示百分比的容器
+        this.rate_bar = this.bar_obj.find('.rate-bar'); // 有颜色部分的百分比
+      }
+
+      /* *
+       * 绘制进度条
+       * */
+      Bar.prototype._progressBar = function(num) {
+        if(!num) {
+          return false;
+        }
+        num = parseFloat(num);
+        num = num > 1 ? 1 : num;
+        num = num < 0 ? 0 : num;
+        var left = this.bar_obj.width() * num + 'px'; // 进度条按钮距左侧的距离  = 进度条的长度 * 百分比
+        this.precent.html(parseInt(num * 100) + '%'); // 显示百分比
+        this.rate_bar.css('width', left); // 有颜色部分的长度
+        this.drag_obj.css('left', left); // 按钮的位置
+      }
+
+      /* *
+       * 设置进度条可拖拽
+       * */
+      Bar.prototype._dragBar = function(opts) {
+        var _this = this;
+        _this.drag_obj.on('mousedown', function(e) {
+          var e = e || window.event;
+          document.onmousemove = function(e) {
+            if(opts != false) {
+              var pro_bar = e.clientX - _this.bar_obj[0].offsetLeft; // 获取按钮距进度条最左边的距离
+              $(this).css('left', pro_bar);
+              var num = (pro_bar / _this.bar_obj.width()).toFixed(2); // 计算百分比
+              _this._progressBar(num); // 根据百分比绘制进度条
+            }
+          }
+          document.onmouseup = new Function('this.onmousemove=null');
+        })
+      }
+
+      /* *
+       * 封装成jQuery组件
+       * */
+      ;(function($) {
+        $.fn.extend({
+          dragBar: function(num, opts) {
+            var bar = new Bar(this);
+            bar._progressBar(num);
+            bar._dragBar(opts);
+            return this;
+          }
+        })
+      })(jQuery)
+
+
+
+      /* *
+       * 调用方法
+       * $(ele).dragBar(num, opts);
+       * num: 进度条的百分比，传入小数
+       * opts: 可选，默认是true(可以拖拽)。false: 不可拖拽
+       * */
+
+      $('.pro-bar').dragBar(); //可拖动
+      $('#aa').off('click').on('click', function() {
+        $('.pro-bar').dragBar(0.9, true); //给定初始值， 设置可拖动
+      })
+      $('#bb').off('click').on('click', function() {
+        $('.pro-bar').dragBar(0.5, false);
+      })
+    </script>
+  </body>
+
+</html>
